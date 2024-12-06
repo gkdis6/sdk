@@ -117,10 +117,10 @@ export class FlowModule implements FlowModuleInterface {
         } catch (error: any) {
             return {
                 success: false,
-                code: 500,
-                message: 'Network Error',
+                code: error.status,
+                message: 'Error',
                 error: {
-                    code: 'Server Error',
+                    code: error.name,
                     message: error.message,
                 },
             };
