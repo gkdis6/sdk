@@ -33,6 +33,9 @@ export class FlowModule implements FlowModuleInterface {
     private domain: string;
 
     constructor(domain: string) {
+        if (!domain || domain.length === 0) {
+            throw new Error('Domain is not provided or is empty.');
+        }
         this.domain = domain;
     }
 
