@@ -37,7 +37,7 @@ export class FlowModule implements FlowModuleInterface {
     }
 
     public async sendBotNotifications(BOT_ID: string, RCVR_USER_ID: string, CNTN: string = '', CNTS_CRTC_KEY: string): Promise<ApiResponse> {
-        if (!RCVR_USER_ID && RCVR_USER_ID.length === 0) {
+        if (!RCVR_USER_ID || RCVR_USER_ID.length === 0) {
             return {
                 success: false,
                 code: 400,
