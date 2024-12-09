@@ -30,16 +30,21 @@ export interface FlowModuleInterface {
 }
 
 export class FlowModule implements FlowModuleInterface {
-    private domain: string;
+    private DOMAIN: string;
+    private CNTS_CRTC_KEY: string;
 
-    constructor(domain: string) {
-        if (!domain || domain.length === 0) {
+    constructor(DOMAIN: string, CNTS_CRTC_KEY: string) {
+        if (!DOMAIN || DOMAIN.length === 0) {
             throw new Error('Domain is not provided or is empty.');
         }
-        this.domain = domain;
+        if (!CNTS_CRTC_KEY || CNTS_CRTC_KEY.length === 0) {
+            throw new Error('CNTS_CRTC_KEY is not provided or is empty.');
+        }
+        this.DOMAIN = DOMAIN;
+        this.CNTS_CRTC_KEY = CNTS_CRTC_KEY;
     }
 
-    public async sendBotNotifications(BOT_ID: string, RCVR_USER_ID: string, CNTN: string = '', CNTS_CRTC_KEY: string): Promise<ApiResponse> {
+    public async sendBotNotifications(BOT_ID: string, RCVR_USER_ID: string, CNTN: string = ''): Promise<ApiResponse> {
         if (!RCVR_USER_ID || RCVR_USER_ID.length === 0) {
             return {
                 success: false,
@@ -62,21 +67,10 @@ export class FlowModule implements FlowModuleInterface {
                 },
             };
         }
-        if (!CNTS_CRTC_KEY || CNTS_CRTC_KEY.length === 0) {
-            return {
-                success: false,
-                code: 400,
-                message: 'CNTS_CRTC_KEY is No provided',
-                error: {
-                    code: 'Bad Request',
-                    message: 'The CNTS_CRTC_KEY is empty or null.',
-                },
-            };
-        }
         const inputData: InputData = {
             JSONData: {
                 API_KEY: 'FLOW_BOT_NOTI_API',
-                CNTS_CRTC_KEY,
+                CNTS_CRTC_KEY: this.CNTS_CRTC_KEY,
                 REQ_DATA: {
                     BOT_ID,
                     RCVR_USER_ID,
@@ -91,7 +85,7 @@ export class FlowModule implements FlowModuleInterface {
 
     private async sendApi(inputData: InputData): Promise<ApiResponse> {
         try {
-            const response: AxiosResponse = await axios.post(`${this.domain}/OpenGate`, inputData, {
+            const response: AxiosResponse = await axios.post(`${this.DOMAIN}/OpenGate`, inputData, {
                 headers: { 'Content-Type': 'application/json' },
                 timeout: 5000,
             });

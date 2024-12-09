@@ -4,7 +4,7 @@ import { FlowModule } from '../src/index';
 
 describe('FlowModule', () => {
     let mock : InstanceType<typeof MockAdapter>;
-    const flowModule = new FlowModule('https://example.com/api');
+    const flowModule = new FlowModule('https://example.com/api', 'content-key');
 
     beforeEach(() => {
         mock = new MockAdapter(axios);
@@ -20,7 +20,7 @@ describe('FlowModule', () => {
             RSLT_MSG: '전송 성공',
         });
 
-        const result = await flowModule.sendBotNotifications('BOT123', 'user1', 'Hello!', 'content-key');
+        const result = await flowModule.sendBotNotifications('BOT123', 'user1', 'Hello!');
         expect(mock.history.post.length).toBe(1); // API 호출 여부 확인
         expect(result.success).toBe(true);
         expect(result.code).toBe(200);
@@ -34,7 +34,7 @@ describe('FlowModule', () => {
             RSLT_MSG: '전송 성공',
         });
 
-        const result = await flowModule.sendBotNotifications('', 'user1', 'Hello!', 'content-key');
+        const result = await flowModule.sendBotNotifications('', 'user1', 'Hello!');
         expect(mock.history.post.length).toBe(0); // API 호출 여부 확인
         expect(result.success).toBe(false);
         expect(result.code).toBe(400);
@@ -58,7 +58,7 @@ describe('FlowModule', () => {
             RSLT_MSG: '전송 성공',
         });
 
-        const result = await flowModule.sendBotNotifications('BOT123', '', 'Hello!', 'content-key');
+        const result = await flowModule.sendBotNotifications('BOT123', '', 'Hello!');
         expect(mock.history.post.length).toBe(0); // API 호출 여부 확인
         // console.log(result); // 전달된 응답 확인
         expect(result.success).toBe(false);
@@ -93,7 +93,7 @@ describe('FlowModule', () => {
             RSLT_MSG: '전송 성공',
         });
 
-        const result = await flowModule.sendBotNotifications('BOT123', 'user1', '', 'content-key');
+        const result = await flowModule.sendBotNotifications('BOT123', 'user1', '');
         expect(mock.history.post.length).toBe(1); // API 호출 여부 확인
         // console.log(result); // 전달된 응답 확인
         expect(result.success).toBe(true);
@@ -110,19 +110,6 @@ describe('FlowModule', () => {
     //     expect(mock.history.post.length).toBe(1); // API 호출 여부 확인
     //     console.log(result); // 전달된 응답 확인
     // });
-
-    test('should return an error response when CNTS_CRTC_KEY is empty', async () => {
-        mock.onPost('https://example.com/api/OpenGate').reply(200, {
-            RSLT_CD: '0000',
-            RSLT_MSG: '전송 성공',
-        });
-
-        const result = await flowModule.sendBotNotifications('BOT123', 'user1', 'Hello!', '');
-        expect(mock.history.post.length).toBe(0); // API 호출 여부 확인
-        // console.log(result); // 전달된 응답 확인
-        expect(result.success).toBe(false);
-        expect(result.code).toBe(400);
-    });
 
     // test('should send notifications successfully when RSLT_CD is 0000', async () => {
     //     mock.onPost('https://example.com/api/OpenGate').reply(200, {
@@ -141,7 +128,7 @@ describe('FlowModule', () => {
             RSLT_MSG: '에러 발생',
         });
 
-        const result = await flowModule.sendBotNotifications('BOT123', 'user1', 'Hello!', 'content-key');
+        const result = await flowModule.sendBotNotifications('BOT123', 'user1', 'Hello!');
         expect(mock.history.post.length).toBe(1); // API 호출 여부 확인
         // console.log(result); // 전달된 응답 확인
         expect(result.success).toBe(false);
@@ -152,7 +139,7 @@ describe('FlowModule', () => {
         mock.onPost('https://example.com/api/OpenGate').networkError();
 
         try {
-            const result = await flowModule.sendBotNotifications('BOT123', 'user1', 'Hello!', 'content-key');
+            const result = await flowModule.sendBotNotifications('BOT123', 'user1', 'Hello!');
             expect(mock.history.post.length).toBe(1); // API 호출 여부 확인
             // console.log(result); // 전달된 응답 확인
         } catch (error: any) {
@@ -163,7 +150,11 @@ describe('FlowModule', () => {
     });
 
     test('flowModule constroctor\'s domain is not empty', async () => {
-        expect(() => new FlowModule('')).toThrowError('Domain is not provided or is empty.')
+        expect(() => new FlowModule('', 'content-key')).toThrowError('Domain is not provided or is empty.')
+    });
+
+    test('flowModule constroctor\'s CNTS_CRTC_KEY is not empty', async () => {
+        expect(() => new FlowModule('https://example.com/api', '')).toThrowError('CNTS_CRTC_KEY is not provided or is empty.')
     });
 
 });

@@ -10,5 +10,5 @@
     "declarationMap": true,
     "allowSyntheticDefaultImports": true
   },
-  "files": ["../src/**/*"]
+  "include": ["../src/**/*"]
 }
