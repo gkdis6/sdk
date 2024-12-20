@@ -25,6 +25,37 @@ interface ApiResponse {
     }; // 실패 시 반환되는 에러 정보
 }
 
+class TokenManager {
+    private static ACCESS_TOKEN_KEY = 'accessToken';
+    private static REFRESH_TOKEN_KEY = 'refreshToken';
+
+    // Access Token 저장
+    public static setAccessToken(token: string) {
+        localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+    }
+
+    // Refresh Token 저장
+    public static setRefreshToken(token: string) {
+        localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
+    }
+
+    // Access Token 반환
+    public static getAccessToken(): string | null {
+        return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+    }
+
+    // Refresh Token 반환
+    public static getRefreshToken(): string | null {
+        return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    }
+
+    // 토큰 제거
+    public static clearTokens() {
+        localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+        localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    }
+}
+
 export interface FlowModuleInterface {
     sendBotNotifications(BOT_ID: string, RCVR_USER_ID: string, CNTN: string, CNTS_CRTC_KEY: string): Promise<ApiResponse>;
 }
