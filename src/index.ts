@@ -56,6 +56,65 @@ class TokenManager {
     }
 }
 
+async function refreshAccessToken(): Promise<string | null> {
+    const refreshToken = TokenManager.getRefreshToken();
+    if (!refreshToken) {
+        console.error('Refresh Token is missing');
+        location.replace('/signin.act');
+        return null;
+    }
+
+    try {
+        const response = await axios.post('/auth/refresh-token', {
+            refreshToken,
+        });
+
+        const { accessToken} = response.data;
+        TokenManager.setAccessToken(accessToken); // 새 Access Token 저장
+        return accessToken;
+    } catch (error) {
+        console.error('Failed to refresh Access Token', error);
+        TokenManager.clearTokens();
+        location.replace('/signin.act');
+        return null;
+    }
+}
+
+async function executeApi(
+    apiKey: string,
+    inputJson: any,
+    successCallback: Function,
+    errorCallback: Function,
+    isMaster: boolean = false,
+    finalCallback?: Function
+) {
+    try {
+        let accessToken = TokenManager.getAccessToken();
+        if (!accessToken) {
+            accessToken = await refreshAccessToken();
+            if (!accessToken) return; // 갱신 실패 시 함수 종료
+        }
+
+        const headers = {
+            Authorization: `Bearer ${accessToken}`,
+        };
+
+        const response = await axios.post(`/${apiKey}.jct`, {
+            "_JSON_": encodeURIComponent(JSON.stringify(inputJson)),
+        }, { headers });
+
+        successCallback(response.data);
+    } catch (error: any) {
+        if (error.response?.status === 401) {
+            const newAccessToken = await refreshAccessToken();
+            if (newAccessToken) {
+                return executeApi(apiKey, inputJson, successCallback, errorCallback, isMaster, finalCallback);
+            }
+        }
+        errorCallback(error);
+    }
+}
+
 export interface FlowModuleInterface {
     sendBotNotifications(BOT_ID: string, RCVR_USER_ID: string, CNTN: string, CNTS_CRTC_KEY: string): Promise<ApiResponse>;
 }
