@@ -4,7 +4,7 @@ import { Module } from '../src/index';
 
 describe('FlowModule', () => {
     let mock : InstanceType<typeof MockAdapter>;
-    const flowModule = new Module('https://example.com/api', 'content-key');
+    const flowModule = new Module('https://example.com/', 'content-key');
 
     beforeEach(() => {
         mock = new MockAdapter(axios);
