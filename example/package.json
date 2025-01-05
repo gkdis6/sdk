@@ -12,7 +12,7 @@
   "author": "gkdis6",
   "license": "MIT",
   "dependencies": {
-    "flow-sdk": "file:../flow-sdk-1.0.0.tgz",
+    "sdk": "file:../sdk-1.0.0.tgz",
     "typescript": "^5.7.2"
   },
   "type": "module"
